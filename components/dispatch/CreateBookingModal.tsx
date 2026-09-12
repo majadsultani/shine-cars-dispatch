@@ -127,7 +127,7 @@ export default function CreateBookingModal({ onClose }: { onClose: () => void })
               <div className="flex items-center justify-between">
                 <div><p className="text-navy/40 text-xs">Distance</p><p className="text-navy font-bold">{distance.toFixed(1)} miles</p></div>
                 <div className="text-right"><p className="text-navy/40 text-xs">{fareType === "meter" ? "Estimated Range" : "Estimated Fare"}</p>
-                  {fareType === "meter" ? <p className="text-crimson font-bold text-xl">&pound;{(displayFare * 0.9).toFixed(2)} – £{(displayFare * 1.1).toFixed(2)}</p>
+                  {fareType === "meter" ? <p className="text-crimson font-bold text-xl">&pound;{displayFare.toFixed(2)} – £{(displayFare * 1.1).toFixed(2)}</p>
                     : <p className="text-crimson font-bold text-xl">&pound;{displayFare.toFixed(2)}</p>}</div>
               </div>
               {activeEvent && (<div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 space-y-1">
