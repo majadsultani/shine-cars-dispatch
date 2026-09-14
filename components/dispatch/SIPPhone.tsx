@@ -83,19 +83,28 @@ export default function SIPPhone() {
     }
   }, []);
 
-  const handleAccept = useCallback(() => {
-    try {
-      activeCallRef.current?.accept();
-    } catch {}
-  }, []);
-
-  const handleReject = useCallback(() => {
-    try {
-      activeCallRef.current?.reject();
-    } catch {}
+  const clearCall = useCallback(() => {
     activeCallRef.current = null;
     setIncoming(null);
   }, []);
+
+  const handleAccept = useCallback(() => {
+    const call = activeCallRef.current;
+    if (!call) return;
+    try {
+      call.accept();
+    } catch {}
+    setIncoming(null);
+  }, []);
+
+  const handleReject = useCallback(() => {
+    const call = activeCallRef.current;
+    if (!call) { clearCall(); return; }
+    try {
+      call.reject();
+    } catch {}
+    clearCall();
+  }, [clearCall]);
 
   const setupDevice = useCallback(async () => {
     try {
@@ -119,15 +128,9 @@ export default function SIPPhone() {
         const info = await lookupCaller(callerNumber);
         setIncoming(info);
 
-        call.on("cancel", () => {
-          activeCallRef.current = null;
-          setTimeout(() => setIncoming(null), 2000);
-        });
-
-        call.on("disconnect", () => {
-          activeCallRef.current = null;
-          setTimeout(() => setIncoming(null), 2000);
-        });
+        call.on("cancel", () => clearCall());
+        call.on("disconnect", () => clearCall());
+        call.on("reject", () => clearCall());
       });
 
       device.on("tokenWillExpire", async () => {
