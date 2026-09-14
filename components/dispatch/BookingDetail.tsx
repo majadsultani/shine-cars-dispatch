@@ -7,7 +7,7 @@ import StatusBadge from "@/components/dispatch/StatusBadge";
 import BookingInfoRows from "@/components/dispatch/BookingInfoRows";
 import BookingEditFields, { BookingEdits } from "@/components/dispatch/BookingEditFields";
 import { PlaceData } from "@/components/dispatch/DispatchAddressInput";
-import { calculateFare, isInMarchArea, isSundayOrHoliday, metersToMiles, type VehicleType } from "@/lib/fare";
+import { calculateFare, isInMarchArea, isSundayOrHoliday, metersToMiles, DEFAULT_SURCHARGE, type VehicleType, type SurchargeConfig } from "@/lib/fare";
 
 interface Booking {
   id: string; name: string; phone: string;
@@ -37,6 +37,7 @@ export default function BookingDetail({ booking, onClose }: { booking: Booking; 
   const [editing, setEditing] = useState(false);
   const [calculating, setCalculating] = useState(false);
   const [marchSurchargeOn, setMarchSurchargeOn] = useState(true);
+  const [surchargeConfig, setSurchargeConfig] = useState<SurchargeConfig>(DEFAULT_SURCHARGE);
   const places = useRef<{ pickup?: PlaceData; dropoff?: PlaceData }>({});
   const parsedStops: string[] = booking.stops ? (() => { try { return JSON.parse(booking.stops); } catch { return []; } })() : [];
   const [edits, setEdits] = useState<BookingEdits>({
@@ -55,6 +56,8 @@ export default function BookingDetail({ booking, onClose }: { booking: Booking; 
     fetch("/api/drivers?status=approved").then((r) => r.json()).then((d) => setDrivers(d.drivers || [])).catch(() => {});
     fetch("/api/settings/march-surcharge").then((r) => r.json())
       .then((d) => setMarchSurchargeOn(d.enabled !== false)).catch(() => {});
+    fetch("/api/settings/area-surcharge").then((r) => r.json())
+      .then((d) => setSurchargeConfig({ radiusMiles: d.radiusMiles ?? 3, perMile: d.perMile ?? 1 })).catch(() => {});
   }, []);
 
   const handlePlaceChange = (type: "pickup" | "dropoff", place: PlaceData) => {
@@ -69,7 +72,7 @@ export default function BookingDetail({ booking, onClose }: { booking: Booking; 
         if (st !== "OK" || !res?.rows[0]?.elements[0]?.distance) return;
         const miles = metersToMiles(res.rows[0].elements[0].distance.value);
         const skipSurcharge = !marchSurchargeOn && isInMarchArea(p.lat, p.lng);
-        const fare = calculateFare(miles, p.lat, p.lng, edits.vehicle as VehicleType, isSundayOrHoliday(edits.date), skipSurcharge);
+        const fare = calculateFare(miles, p.lat, p.lng, edits.vehicle as VehicleType, isSundayOrHoliday(edits.date), skipSurcharge, surchargeConfig);
         setEdits((prev) => ({ ...prev, distance: miles.toFixed(1), fare: fare.toFixed(2) }));
       }
     );

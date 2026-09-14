@@ -1,8 +1,8 @@
 // Office: PE13 1AU, Wisbech, Cambridgeshire
 const OFFICE_LAT = 52.6646;
 const OFFICE_LNG = 0.1601;
-const SURCHARGE_RADIUS_MILES = 3;
-const SURCHARGE_PER_MILE = 1;
+const DEFAULT_SURCHARGE_RADIUS_MILES = 3;
+const DEFAULT_SURCHARGE_PER_MILE = 1;
 
 // March, Cambridgeshire (PE15)
 const MARCH_LAT = 52.5512;
@@ -10,6 +10,16 @@ const MARCH_LNG = 0.0882;
 const MARCH_RADIUS_MILES = 3;
 
 export type VehicleType = "car" | "mpv";
+
+export interface SurchargeConfig {
+  radiusMiles: number;
+  perMile: number;
+}
+
+export const DEFAULT_SURCHARGE: SurchargeConfig = {
+  radiusMiles: DEFAULT_SURCHARGE_RADIUS_MILES,
+  perMile: DEFAULT_SURCHARGE_PER_MILE,
+};
 
 export const VEHICLES = {
   car: { label: "Car", passengers: 4, baseFare: 4 },
@@ -31,7 +41,7 @@ const SUNDAY_RATES = {
  * Car: £4 base (1mi), £2.00/mi (1-30mi), £1.40/mi (30+mi)
  * MPV: £6 base (1mi), £2.30/mi (1-30mi), £1.50/mi (30+mi)
  * Sunday/Bank Holiday: Car £5/MPV £7 min (1.4mi), then normal + 1.5%
- * Pickup surcharge: £1/mi beyond 3mi from office
+ * Pickup surcharge: configurable per mile beyond configurable radius from office
  */
 export function calculateFare(
   distanceMiles: number,
@@ -40,6 +50,7 @@ export function calculateFare(
   vehicle: VehicleType = "car",
   isSunday = false,
   skipPickupSurcharge = false,
+  surcharge: SurchargeConfig = DEFAULT_SURCHARGE,
 ): number {
   if (distanceMiles <= 0) return 0;
 
@@ -60,8 +71,8 @@ export function calculateFare(
 
   if (!skipPickupSurcharge && pickupLat !== undefined && pickupLng !== undefined) {
     const distFromOffice = haversineDistance(OFFICE_LAT, OFFICE_LNG, pickupLat, pickupLng);
-    if (distFromOffice > SURCHARGE_RADIUS_MILES) {
-      fare += (distFromOffice - SURCHARGE_RADIUS_MILES) * SURCHARGE_PER_MILE;
+    if (distFromOffice > surcharge.radiusMiles) {
+      fare += (distFromOffice - surcharge.radiusMiles) * surcharge.perMile;
     }
   }
 
@@ -99,9 +110,9 @@ function parseDate(s: string): Date | null {
   return isNaN(d.getTime()) ? null : d;
 }
 
-/** Check if pickup is outside the 3-mile office radius */
-export function isOutsideOfficeRadius(lat: number, lng: number): boolean {
-  return haversineDistance(OFFICE_LAT, OFFICE_LNG, lat, lng) > SURCHARGE_RADIUS_MILES;
+/** Check if pickup is outside the office radius */
+export function isOutsideOfficeRadius(lat: number, lng: number, radiusMiles = DEFAULT_SURCHARGE_RADIUS_MILES): boolean {
+  return haversineDistance(OFFICE_LAT, OFFICE_LNG, lat, lng) > radiusMiles;
 }
 
 /** Check if a location is in the March area */
@@ -109,13 +120,13 @@ export function isInMarchArea(lat: number, lng: number): boolean {
   return haversineDistance(MARCH_LAT, MARCH_LNG, lat, lng) <= MARCH_RADIUS_MILES;
 }
 
-export function pickupSurcharge(lat: number, lng: number): number {
+export function pickupSurcharge(lat: number, lng: number, surcharge: SurchargeConfig = DEFAULT_SURCHARGE): number {
   const dist = haversineDistance(OFFICE_LAT, OFFICE_LNG, lat, lng);
-  if (dist <= SURCHARGE_RADIUS_MILES) return 0;
-  return Math.round((dist - SURCHARGE_RADIUS_MILES) * SURCHARGE_PER_MILE * 100) / 100;
+  if (dist <= surcharge.radiusMiles) return 0;
+  return Math.round((dist - surcharge.radiusMiles) * surcharge.perMile * 100) / 100;
 }
 
-export const SURCHARGE = SURCHARGE_PER_MILE;
+export const SURCHARGE = DEFAULT_SURCHARGE_PER_MILE;
 
 function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 3958.8;
@@ -143,8 +154,9 @@ export function calculateFareRange(
   vehicle: VehicleType = "car",
   isSunday = false,
   skipPickupSurcharge = false,
+  surcharge: SurchargeConfig = DEFAULT_SURCHARGE,
 ): { min: number; max: number } {
-  const fare = calculateFare(distanceMiles, pickupLat, pickupLng, vehicle, isSunday, skipPickupSurcharge);
+  const fare = calculateFare(distanceMiles, pickupLat, pickupLng, vehicle, isSunday, skipPickupSurcharge, surcharge);
   return {
     min: Math.round(fare * 100) / 100,
     max: Math.round(fare * 1.1 * 100) / 100,
