@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Device, Call } from "@twilio/voice-sdk";
 import IncomingCall from "@/components/dispatch/IncomingCall";
-import ActiveCall from "@/components/dispatch/ActiveCall";
 
 interface BookingSummary {
   id: string; pickup: string; dropoff: string; date: string; time: string; status: string; fare: number;
@@ -22,17 +21,15 @@ interface CallerInfo {
 
 export default function SIPPhone() {
   const deviceRef = useRef<Device | null>(null);
-  const callRef = useRef<Call | null>(null);
+  const activeCallRef = useRef<Call | null>(null);
   const [status, setStatus] = useState<"disconnected" | "connecting" | "registered" | "error">("disconnected");
   const [incoming, setIncoming] = useState<CallerInfo | null>(null);
-  const [activeCall, setActiveCall] = useState<CallerInfo | null>(null);
 
   const lookupCaller = useCallback(async (number: string): Promise<CallerInfo> => {
     try {
       const clean = number.replace(/[^0-9+]/g, "");
       const searchDigits = clean.slice(-10);
 
-      // First search customers directly by phone
       let customerId: string | undefined;
       let customerName: string | undefined;
       let accountType: string | undefined;
@@ -50,7 +47,6 @@ export default function SIPPhone() {
         }
       } catch {}
 
-      // Then search bookings for history
       const res = await fetch(`/api/bookings?limit=100`);
       const data = await res.json();
       const customerBookings = data.bookings?.filter((b: { phone: string }) =>
@@ -77,50 +73,66 @@ export default function SIPPhone() {
     }
   }, []);
 
+  const fetchToken = useCallback(async (): Promise<string | null> => {
+    try {
+      const res = await fetch("/api/twilio/token");
+      const data = await res.json();
+      return data.token || null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const handleAccept = useCallback(() => {
+    try {
+      activeCallRef.current?.accept();
+    } catch {}
+  }, []);
+
+  const handleReject = useCallback(() => {
+    try {
+      activeCallRef.current?.reject();
+    } catch {}
+    activeCallRef.current = null;
+    setIncoming(null);
+  }, []);
+
   const setupDevice = useCallback(async () => {
     try {
       setStatus("connecting");
-      const res = await fetch("/api/twilio/token");
-      const data = await res.json();
 
-      if (!data.token) {
-        setStatus("error");
-        return;
-      }
+      const token = await fetchToken();
+      if (!token) { setStatus("error"); return; }
 
-      const device = new Device(data.token, {
+      const device = new Device(token, {
         logLevel: 1,
         codecPreferences: [Call.Codec.Opus, Call.Codec.PCMU],
       });
 
       device.on("registered", () => setStatus("registered"));
-      device.on("error", () => setStatus("error"));
       device.on("unregistered", () => setStatus("disconnected"));
+      device.on("error", () => setStatus("error"));
 
       device.on("incoming", async (call: Call) => {
-        callRef.current = call;
+        activeCallRef.current = call;
         const callerNumber = call.parameters.From || "Unknown";
         const info = await lookupCaller(callerNumber);
         setIncoming(info);
 
         call.on("cancel", () => {
-          setIncoming(null);
-          callRef.current = null;
+          activeCallRef.current = null;
+          setTimeout(() => setIncoming(null), 2000);
         });
 
         call.on("disconnect", () => {
-          setIncoming(null);
-          setActiveCall(null);
-          callRef.current = null;
+          activeCallRef.current = null;
+          setTimeout(() => setIncoming(null), 2000);
         });
       });
 
       device.on("tokenWillExpire", async () => {
-        const refreshRes = await fetch("/api/twilio/token");
-        const refreshData = await refreshRes.json();
-        if (refreshData.token) {
-          device.updateToken(refreshData.token);
-        }
+        const newToken = await fetchToken();
+        if (newToken) device.updateToken(newToken);
       });
 
       await device.register();
@@ -128,7 +140,7 @@ export default function SIPPhone() {
     } catch {
       setStatus("error");
     }
-  }, [lookupCaller]);
+  }, [lookupCaller, fetchToken]);
 
   useEffect(() => {
     setupDevice();
@@ -136,27 +148,6 @@ export default function SIPPhone() {
       deviceRef.current?.destroy();
     };
   }, [setupDevice]);
-
-  const dismissIncoming = () => setIncoming(null);
-
-  const acceptCall = () => {
-    if (!callRef.current) return;
-    callRef.current.accept();
-    setActiveCall(incoming);
-    setIncoming(null);
-  };
-
-  const rejectCall = () => {
-    callRef.current?.reject();
-    setIncoming(null);
-    callRef.current = null;
-  };
-
-  const hangup = () => {
-    callRef.current?.disconnect();
-    setActiveCall(null);
-    callRef.current = null;
-  };
 
   return (
     <>
@@ -184,19 +175,9 @@ export default function SIPPhone() {
         {incoming && (
           <IncomingCall
             caller={incoming}
-            onAccept={acceptCall}
-            onReject={rejectCall}
-            onDismiss={dismissIncoming}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {activeCall && (
-          <ActiveCall
-            callerName={activeCall.name || "Unknown"}
-            callerNumber={activeCall.number}
-            onHangup={hangup}
+            onAccept={handleAccept}
+            onReject={handleReject}
+            onDismiss={() => setIncoming(null)}
           />
         )}
       </AnimatePresence>
