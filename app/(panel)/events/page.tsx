@@ -22,6 +22,9 @@ export default function EventsPage() {
   const [reopeningTime, setReopeningTime] = useState("08:00");
   const [licenceFee, setLicenceFee] = useState("3");
   const [licenceSaving, setLicenceSaving] = useState(false);
+  const [surchargeRadius, setSurchargeRadius] = useState("3");
+  const [surchargeRate, setSurchargeRate] = useState("1");
+  const [surchargeSaving, setSurchargeSaving] = useState(false);
 
   const load = useCallback(() => {
     fetch("/api/events").then((r) => r.json()).then((d) => setEvents(d.events || [])).catch(() => {});
@@ -34,6 +37,7 @@ export default function EventsPage() {
     fetch("/api/settings/march-surcharge").then((r) => r.json()).then((d) => setMarchSurchargeOn(d.enabled !== false)).catch(() => {});
     fetch("/api/settings/system-status").then((r) => r.json()).then((d) => { setSystemOpen(d.open); setReopeningTime(d.reopeningTime || "08:00"); }).catch(() => {});
     fetch("/api/settings/licence-fee").then((r) => r.json()).then((d) => setLicenceFee(String(d.fee ?? 3))).catch(() => {});
+    fetch("/api/settings/area-surcharge").then((r) => r.json()).then((d) => { setSurchargeRadius(String(d.radiusMiles ?? 3)); setSurchargeRate(String(d.perMile ?? 1)); }).catch(() => {});
   }, []);
 
   const togglePriority = async () => {
@@ -146,6 +150,41 @@ export default function EventsPage() {
           className={`relative w-12 h-6 rounded-full transition-colors cursor-pointer ${marchSurchargeOn ? "bg-blue-500" : "bg-gray-300"}`}>
           <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${marchSurchargeOn ? "translate-x-6.5" : "translate-x-0.5"}`} />
         </button>
+      </div>
+
+      {/* Area Surcharge Settings */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+            <MapPin className="w-5 h-5 text-purple-500" />
+          </div>
+          <div>
+            <h3 className="text-navy font-bold text-sm">Area Surcharge Settings</h3>
+            <p className="text-navy/50 text-xs">Configure the free zone radius and surcharge rate per mile</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-navy/60 text-xs font-medium whitespace-nowrap">Free Radius</label>
+            <input type="number" value={surchargeRadius} onChange={(e) => setSurchargeRadius(e.target.value)}
+              className="w-20 border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-navy font-bold outline-none focus:border-crimson/40 text-center" min="0" step="0.5" />
+            <span className="text-navy/40 text-xs">miles</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-navy/60 text-xs font-medium whitespace-nowrap">Rate</label>
+            <span className="text-navy/40 text-sm">£</span>
+            <input type="number" value={surchargeRate} onChange={(e) => setSurchargeRate(e.target.value)}
+              className="w-20 border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-navy font-bold outline-none focus:border-crimson/40 text-center" min="0" step="0.5" />
+            <span className="text-navy/40 text-xs">/mile</span>
+          </div>
+          <button disabled={surchargeSaving} onClick={async () => {
+            setSurchargeSaving(true);
+            await fetch("/api/settings/area-surcharge", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ radiusMiles: Number(surchargeRadius), perMile: Number(surchargeRate) }) });
+            setSurchargeSaving(false);
+          }} className="text-xs text-white bg-purple-500 hover:bg-purple-600 px-3 py-1.5 rounded-lg font-semibold cursor-pointer transition-colors">
+            {surchargeSaving ? "..." : "Save"}
+          </button>
+        </div>
       </div>
 
       {/* Driver Licence Fee */}

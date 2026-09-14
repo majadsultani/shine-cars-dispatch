@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { X, MapPin, Navigation, Loader2, Plus, CircleDot } from "lucide-react";
 import CustomerPicker from "@/components/dispatch/CustomerPicker";
 import DispatchAddressInput, { PlaceData } from "@/components/dispatch/DispatchAddressInput";
-import { calculateFare, isInMarchArea, isSundayOrHoliday, metersToMiles, type VehicleType } from "@/lib/fare";
+import { calculateFare, isInMarchArea, isSundayOrHoliday, metersToMiles, DEFAULT_SURCHARGE, type VehicleType, type SurchargeConfig } from "@/lib/fare";
 
 function applyEventSurcharge(fare: number, percent: number) {
   return Math.round(fare * (1 + percent / 100) * 100) / 100;
@@ -29,10 +29,13 @@ export default function CreateBookingModal({ onClose }: { onClose: () => void })
   const [calculating, setCalculating] = useState(false); const [error, setError] = useState("");
   const [activeEvent, setActiveEvent] = useState<ActiveEvent | null>(null);
   const [marchSurchargeOn, setMarchSurchargeOn] = useState(true);
+  const [surchargeConfig, setSurchargeConfig] = useState<SurchargeConfig>(DEFAULT_SURCHARGE);
 
   useEffect(() => {
     fetch("/api/settings/march-surcharge").then((r) => r.json())
       .then((d) => setMarchSurchargeOn(d.enabled !== false)).catch(() => {});
+    fetch("/api/settings/area-surcharge").then((r) => r.json())
+      .then((d) => setSurchargeConfig({ radiusMiles: d.radiusMiles ?? 3, perMile: d.perMile ?? 1 })).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -52,10 +55,10 @@ export default function CreateBookingModal({ onClose }: { onClose: () => void })
       if (status !== "OK" || !res?.routes[0]) return;
       const miles = metersToMiles(res.routes[0].legs.reduce((sum, leg) => sum + (leg.distance?.value || 0), 0));
       const skipSurcharge = !marchSurchargeOn && isInMarchArea(pickup.lat, pickup.lng);
-      setDistance(miles); setFare(calculateFare(miles, pickup.lat, pickup.lng, vehicle, isSundayOrHoliday(date), skipSurcharge));
+      setDistance(miles); setFare(calculateFare(miles, pickup.lat, pickup.lng, vehicle, isSundayOrHoliday(date), skipSurcharge, surchargeConfig));
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pickup, dropoff, vehicle, JSON.stringify(stops), marchSurchargeOn]);
+  }, [pickup, dropoff, vehicle, JSON.stringify(stops), marchSurchargeOn, surchargeConfig]);
 
   const inputClass = "w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-navy outline-none focus:border-crimson/50";
   const displayFare = activeEvent ? applyEventSurcharge(fare, activeEvent.increasePercent) : fare;

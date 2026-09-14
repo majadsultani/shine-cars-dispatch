@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { X, MapPin, Navigation, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import DispatchAddressInput, { type PlaceData } from "@/components/dispatch/DispatchAddressInput";
-import { calculateFare, isInMarchArea, metersToMiles, type VehicleType } from "@/lib/fare";
+import { calculateFare, isInMarchArea, metersToMiles, DEFAULT_SURCHARGE, type VehicleType, type SurchargeConfig } from "@/lib/fare";
 
 interface RecurringBooking {
   id: string; name: string; phone: string; pickup: string; dropoff: string;
@@ -35,10 +35,13 @@ export default function EditRecurringModal({ item, onClose }: { item: RecurringB
   const [calculating, setCalculating] = useState(false);
   const [error, setError] = useState("");
   const [marchSurchargeOn, setMarchSurchargeOn] = useState(true);
+  const [surchargeConfig, setSurchargeConfig] = useState<SurchargeConfig>(DEFAULT_SURCHARGE);
 
   useEffect(() => {
     fetch("/api/settings/march-surcharge").then((r) => r.json())
       .then((d) => setMarchSurchargeOn(d.enabled !== false)).catch(() => {});
+    fetch("/api/settings/area-surcharge").then((r) => r.json())
+      .then((d) => setSurchargeConfig({ radiusMiles: d.radiusMiles ?? 3, perMile: d.perMile ?? 1 })).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -54,10 +57,10 @@ export default function EditRecurringModal({ item, onClose }: { item: RecurringB
         const miles = metersToMiles(res.rows[0].elements[0].distance.value);
         setDistance(miles);
         const skipSurcharge = !marchSurchargeOn && isInMarchArea(pickup.lat, pickup.lng);
-        setFare(calculateFare(miles, pickup.lat, pickup.lng, vehicle, false, skipSurcharge));
+        setFare(calculateFare(miles, pickup.lat, pickup.lng, vehicle, false, skipSurcharge, surchargeConfig));
       }
     );
-  }, [pickup, dropoff, vehicle, marchSurchargeOn]);
+  }, [pickup, dropoff, vehicle, marchSurchargeOn, surchargeConfig]);
 
   const toggleDay = (d: string) => setDays((p) => p.includes(d) ? p.filter((x) => x !== d) : [...p, d]);
 
