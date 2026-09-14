@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Phone, PhoneOff, User, MapPin, Navigation, Building2, X } from "lucide-react";
+import { Phone, User, MapPin, Navigation, Building2, X } from "lucide-react";
 import { startNotificationLoop, stopNotificationLoop } from "@/components/dispatch/NotificationSound";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -22,12 +22,10 @@ interface CallerInfo {
 
 interface Props {
   caller: CallerInfo;
-  onAccept: () => void;
-  onReject: () => void;
   onDismiss: () => void;
 }
 
-export default function IncomingCall({ caller, onAccept, onReject, onDismiss }: Props) {
+export default function IncomingCall({ caller, onDismiss }: Props) {
   const router = useRouter();
 
   useEffect(() => {
@@ -121,20 +119,10 @@ export default function IncomingCall({ caller, onAccept, onReject, onDismiss }: 
           </div>
         )}
 
-        {/* Accept / Reject / Dismiss */}
-        <div className="p-8 pt-6 space-y-3">
-          <div className="flex gap-3">
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onAccept}
-              className="flex-1 py-3 rounded-xl bg-green-500 text-white font-medium text-sm hover:bg-green-600 transition-colors cursor-pointer flex items-center justify-center gap-2">
-              <Phone className="w-4 h-4" /> Accept
-            </motion.button>
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onReject}
-              className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium text-sm hover:bg-red-600 transition-colors cursor-pointer flex items-center justify-center gap-2">
-              <PhoneOff className="w-4 h-4" /> Reject
-            </motion.button>
-          </div>
+        {/* Dismiss */}
+        <div className="p-8 pt-6">
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onDismiss}
-            className="w-full py-2.5 rounded-xl bg-white/10 text-white/70 font-medium text-sm hover:bg-white/20 transition-colors cursor-pointer flex items-center justify-center gap-2">
+            className="w-full py-3 rounded-xl bg-white/10 text-white/70 font-medium text-sm hover:bg-white/20 transition-colors cursor-pointer flex items-center justify-center gap-2">
             <X className="w-4 h-4" /> Dismiss
           </motion.button>
         </div>
