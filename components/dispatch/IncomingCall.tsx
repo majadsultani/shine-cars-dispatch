@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Phone, PhoneOff, User, MapPin, Navigation, Building2 } from "lucide-react";
+import { Phone, PhoneOff, User, MapPin, Navigation, Building2, X } from "lucide-react";
 import { startNotificationLoop, stopNotificationLoop } from "@/components/dispatch/NotificationSound";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,7 @@ interface Props {
   caller: CallerInfo;
   onAccept: () => void;
   onReject: () => void;
-  onDismiss?: () => void;
+  onDismiss: () => void;
 }
 
 export default function IncomingCall({ caller, onAccept, onReject, onDismiss }: Props) {
@@ -59,7 +59,7 @@ export default function IncomingCall({ caller, onAccept, onReject, onDismiss }: 
 
         <h3 className="text-white text-2xl font-bold mb-1 flex items-center justify-center gap-2">
           {caller.customerId ? (
-            <button onClick={() => { onDismiss?.(); router.push(`/customers?open=${caller.customerId}`); }} className="hover:text-amber-400 transition-colors cursor-pointer underline decoration-white/20 hover:decoration-amber-400">
+            <button onClick={() => { onDismiss(); router.push(`/customers?open=${caller.customerId}`); }} className="hover:text-amber-400 transition-colors cursor-pointer underline decoration-white/20 hover:decoration-amber-400">
               {caller.name || "Unknown Caller"}
             </button>
           ) : (caller.name || "Unknown Caller")}
@@ -84,11 +84,11 @@ export default function IncomingCall({ caller, onAccept, onReject, onDismiss }: 
         {caller.activeBookings && caller.activeBookings.length > 0 && (
           <div className="mx-6 mb-2 max-h-40 overflow-y-auto space-y-2">
             {caller.activeBookings.map((b) => (
-              <button key={b.id} onClick={() => { onDismiss?.(); router.push(`/bookings?open=${b.id}`); }}
+              <button key={b.id} onClick={() => { onDismiss(); router.push(`/bookings?open=${b.id}`); }}
                 className="w-full p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-left hover:bg-amber-500/20 transition-colors cursor-pointer">
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-amber-400 text-[10px] font-bold uppercase tracking-wider">{b.status}</p>
-                  <p className="text-amber-400 text-[11px] font-bold">£{b.fare.toFixed(2)}</p>
+                  <p className="text-amber-400 text-[11px] font-bold">&pound;{b.fare.toFixed(2)}</p>
                 </div>
                 <div className="space-y-1.5 text-xs">
                   <div className="flex items-start gap-2">
@@ -121,15 +121,21 @@ export default function IncomingCall({ caller, onAccept, onReject, onDismiss }: 
           </div>
         )}
 
-        {/* Accept / Reject */}
-        <div className="flex gap-4 p-8 pt-6 justify-center">
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={onReject}
-            className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center cursor-pointer shadow-lg shadow-red-500/30">
-            <PhoneOff className="w-7 h-7 text-white" />
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={onAccept}
-            className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center cursor-pointer shadow-lg shadow-green-500/30">
-            <Phone className="w-7 h-7 text-white" />
+        {/* Accept / Reject / Dismiss */}
+        <div className="p-8 pt-6 space-y-3">
+          <div className="flex gap-3">
+            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onAccept}
+              className="flex-1 py-3 rounded-xl bg-green-500 text-white font-medium text-sm hover:bg-green-600 transition-colors cursor-pointer flex items-center justify-center gap-2">
+              <Phone className="w-4 h-4" /> Accept
+            </motion.button>
+            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onReject}
+              className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium text-sm hover:bg-red-600 transition-colors cursor-pointer flex items-center justify-center gap-2">
+              <PhoneOff className="w-4 h-4" /> Reject
+            </motion.button>
+          </div>
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={onDismiss}
+            className="w-full py-2.5 rounded-xl bg-white/10 text-white/70 font-medium text-sm hover:bg-white/20 transition-colors cursor-pointer flex items-center justify-center gap-2">
+            <X className="w-4 h-4" /> Dismiss
           </motion.button>
         </div>
       </motion.div>
