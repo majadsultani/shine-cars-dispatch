@@ -17,7 +17,7 @@ export async function sendPushNotification(
       data: data || {},
       android: {
         priority: "high",
-        notification: { sound: "default", channelId: "default" },
+        notification: { sound: "booking_alert.wav", channelId: "booking-alerts" },
       },
       apns: {
         payload: { aps: { sound: "default", badge: 1 } },
