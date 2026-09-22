@@ -84,7 +84,7 @@ export default function Sidebar() {
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                 active
                   ? "bg-crimson/20 text-crimson"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+                  : "text-white hover:bg-white/5"
               }`}>
               <Icon className="w-4.5 h-4.5" />
               {label}
