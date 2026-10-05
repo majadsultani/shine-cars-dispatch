@@ -25,7 +25,7 @@ export default function CreateBookingModal({ onClose }: { onClose: () => void })
   const [fare, setFare] = useState(0); const [distance, setDistance] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [fareType, setFareType] = useState<"fixed" | "meter">("fixed");
-  const [notes, setNotes] = useState(""); const [buildingInfo, setBuildingInfo] = useState(""); const [saving, setSaving] = useState(false);
+  const [notes, setNotes] = useState(""); const [buildingInfo, setBuildingInfo] = useState(""); const [isOpenBid, setIsOpenBid] = useState(false); const [saving, setSaving] = useState(false);
   const [calculating, setCalculating] = useState(false); const [error, setError] = useState("");
   const [activeEvent, setActiveEvent] = useState<ActiveEvent | null>(null);
   const [marchSurchargeOn, setMarchSurchargeOn] = useState(true);
@@ -75,7 +75,7 @@ export default function CreateBookingModal({ onClose }: { onClose: () => void })
         body: JSON.stringify({ customerId: customer.id || null, name: customer.name, phone: customer.phone, email: customer.email,
           pickup: pickupText, dropoff: dropoffText, stops: stops.filter(Boolean), date: `${d}/${m}/${y}`, time, fare: displayFare, distance,
           vehicle, paymentMethod, fareType, notes, buildingInfo: buildingInfo || null, eventPricingId: activeEvent?.id || null,
-          eventSurcharge: activeEvent ? displayFare - fare : null }) });
+          eventSurcharge: activeEvent ? displayFare - fare : null, isOpenBid }) });
       if (!res.ok) { const d = await res.json(); setError(d.error || "Failed"); setSaving(false); return; }
       onClose();
     } catch { setError("Network error"); }
@@ -140,6 +140,15 @@ export default function CreateBookingModal({ onClose }: { onClose: () => void })
                 <p className="text-amber-700/70 text-[11px]">Normal: £{fare.toFixed(2)} + Surcharge: £{(displayFare - fare).toFixed(2)}</p>
               </div>)}
             </div>) : (<p className="text-navy/30 text-xs text-center">Select pickup & drop-off to calculate fare</p>)}
+          </div>
+          <div className="flex items-center gap-3">
+            <button type="button" onClick={() => setIsOpenBid(!isOpenBid)}
+              className={`px-4 py-2.5 rounded-xl text-sm font-bold cursor-pointer transition-colors ${
+                isOpenBid ? "bg-orange-500 text-white" : "bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100"
+              }`}>
+              ⚡ Open Bid
+            </button>
+            {isOpenBid && <p className="text-orange-500 text-xs flex-1">Job will be sent to all available drivers. First to bid wins.</p>}
           </div>
           <div><p className="text-navy/40 text-xs mb-1">Notes</p>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder="Optional notes..." className={`${inputClass} resize-none`} /></div>
