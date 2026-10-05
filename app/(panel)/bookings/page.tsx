@@ -11,6 +11,7 @@ const tabs = [
   { key: "in-progress", label: "In Progress" },
   { key: "completed", label: "Completed" },
   { key: "cancelled", label: "Cancelled" },
+  { key: "open-bid", label: "Open Bids" },
   { key: "recurring", label: "Recurring" },
 ];
 

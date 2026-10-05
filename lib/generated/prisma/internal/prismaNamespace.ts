@@ -410,7 +410,8 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   DriverDocument: 'DriverDocument',
   SiteSetting: 'SiteSetting',
-  EventPricing: 'EventPricing'
+  EventPricing: 'EventPricing',
+  Bid: 'Bid'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -426,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "booking" | "operator" | "driver" | "customer" | "recurringBooking" | "invoice" | "invoiceItem" | "driverInvoice" | "driverInvoiceItem" | "driverNotification" | "chatMessage" | "driverDocument" | "siteSetting" | "eventPricing"
+    modelProps: "booking" | "operator" | "driver" | "customer" | "recurringBooking" | "invoice" | "invoiceItem" | "driverInvoice" | "driverInvoiceItem" | "driverNotification" | "chatMessage" | "driverDocument" | "siteSetting" | "eventPricing" | "bid"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1466,6 +1467,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Bid: {
+      payload: Prisma.$BidPayload<ExtArgs>
+      fields: Prisma.BidFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BidFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BidFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload>
+        }
+        findFirst: {
+          args: Prisma.BidFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BidFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload>
+        }
+        findMany: {
+          args: Prisma.BidFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload>[]
+        }
+        create: {
+          args: Prisma.BidCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload>
+        }
+        createMany: {
+          args: Prisma.BidCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BidCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload>[]
+        }
+        delete: {
+          args: Prisma.BidDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload>
+        }
+        update: {
+          args: Prisma.BidUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload>
+        }
+        deleteMany: {
+          args: Prisma.BidDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BidUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BidUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload>[]
+        }
+        upsert: {
+          args: Prisma.BidUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BidPayload>
+        }
+        aggregate: {
+          args: Prisma.BidAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBid>
+        }
+        groupBy: {
+          args: Prisma.BidGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BidGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BidCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BidCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1541,6 +1616,7 @@ export const BookingScalarFieldEnum = {
   priorityCharge: 'priorityCharge',
   isRecurring: 'isRecurring',
   recurringId: 'recurringId',
+  isOpenBid: 'isOpenBid',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1753,6 +1829,17 @@ export const EventPricingScalarFieldEnum = {
 } as const
 
 export type EventPricingScalarFieldEnum = (typeof EventPricingScalarFieldEnum)[keyof typeof EventPricingScalarFieldEnum]
+
+
+export const BidScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  driverId: 'driverId',
+  bidTime: 'bidTime',
+  isWinner: 'isWinner'
+} as const
+
+export type BidScalarFieldEnum = (typeof BidScalarFieldEnum)[keyof typeof BidScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2012,6 +2099,7 @@ export type GlobalOmitConfig = {
   driverDocument?: Prisma.DriverDocumentOmit
   siteSetting?: Prisma.SiteSettingOmit
   eventPricing?: Prisma.EventPricingOmit
+  bid?: Prisma.BidOmit
 }
 
 /* Types for Logging */

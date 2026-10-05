@@ -43,6 +43,7 @@ model Booking {
   priorityCharge Float?
   isRecurring   Boolean   @default(false)
   recurringId   String?
+  isOpenBid     Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   driver        Driver?   @relation(fields: [driverId], references: [id])
@@ -50,12 +51,14 @@ model Booking {
   recurring     RecurringBooking? @relation(fields: [recurringId], references: [id])
   invoiceItems        InvoiceItem[]
   driverInvoiceItems  DriverInvoiceItem[]
+  bids                Bid[]
 
   @@index([status])
   @@index([createdAt])
   @@index([driverId])
   @@index([customerId])
   @@index([recurringId])
+  @@index([isOpenBid, status])
 }
 
 model Operator {
@@ -89,6 +92,7 @@ model Driver {
   updatedAt         DateTime  @updatedAt
   documents         DriverDocument[]
   bookings          Booking[]
+  bids              Bid[]
   recurringBookings RecurringBooking[]
   notifications     DriverNotification[]
   chatMessages      ChatMessage[]
@@ -276,4 +280,17 @@ model EventPricing {
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  bookingId String
+  driverId  String
+  bidTime   DateTime @default(now())
+  isWinner  Boolean  @default(false)
+  booking   Booking  @relation(fields: [bookingId], references: [id])
+  driver    Driver   @relation(fields: [driverId], references: [id])
+
+  @@index([bookingId])
+  @@index([driverId])
 }

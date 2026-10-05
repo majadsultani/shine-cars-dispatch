@@ -9,7 +9,13 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const { id } = await params;
     const booking = await prisma.booking.findUnique({
       where: { id },
-      include: { driver: { select: { id: true, name: true, phone: true } } },
+      include: {
+        driver: { select: { id: true, name: true, phone: true } },
+        bids: {
+          include: { driver: { select: { id: true, name: true, phone: true } } },
+          orderBy: { bidTime: "asc" },
+        },
+      },
     });
     if (!booking) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ booking });
@@ -22,7 +28,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   try {
     const { id } = await params;
     const body = await req.json();
-    const { status, notes, driverId, pickup, dropoff, stops, date, time, fare, distance, vehicle, paymentMethod, paymentStatus, fareType, meterDistance, meterFare, name, phone, buildingInfo } = body;
+    const { status, notes, driverId, pickup, dropoff, stops, date, time, fare, distance, vehicle, paymentMethod, paymentStatus, fareType, meterDistance, meterFare, name, phone, buildingInfo, isOpenBid } = body;
 
     const data: Record<string, unknown> = {};
     if (status) data.status = status;
@@ -44,7 +50,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (phone !== undefined) data.phone = phone;
     if (buildingInfo !== undefined) data.buildingInfo = buildingInfo;
 
-    if (driverId !== undefined) {
+    if (isOpenBid === true) {
+      data.isOpenBid = true;
+      data.driverId = null;
+      data.status = "open-bid";
+    } else if (driverId !== undefined) {
       if (driverId === null) {
         data.driverId = null;
         data.assignedAt = null;
@@ -102,6 +112,31 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         "booking",
         JSON.stringify({ bookingId: booking.id })
       );
+    }
+
+    // Send FCM to ALL eligible drivers when open bid is created
+    if (isOpenBid === true) {
+      const drivers = await prisma.driver.findMany({
+        where: { status: "approved", isAvailable: true, isEnabled: true, pushToken: { not: null } },
+        select: { id: true, pushToken: true },
+      });
+      for (const d of drivers) {
+        if (d.pushToken) {
+          sendPushNotification(
+            d.pushToken,
+            "Open Bid Available",
+            `${booking.pickup} → ${booking.dropoff} | £${booking.fare.toFixed(2)}`,
+            { bookingId: booking.id, type: "open-bid" }
+          );
+        }
+        createDriverNotification(
+          d.id,
+          "Open Bid Available",
+          `${booking.pickup} → ${booking.dropoff} | £${booking.fare.toFixed(2)}`,
+          "open-bid",
+          JSON.stringify({ bookingId: booking.id })
+        );
+      }
     }
 
     // Send push notification to customer on status change

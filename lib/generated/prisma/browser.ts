@@ -87,3 +87,8 @@ export type SiteSetting = Prisma.SiteSettingModel
  * 
  */
 export type EventPricing = Prisma.EventPricingModel
+/**
+ * Model Bid
+ * 
+ */
+export type Bid = Prisma.BidModel
