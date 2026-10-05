@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { sendPushNotification } from "@/lib/pushNotification";
+import { createDriverNotification } from "@/lib/notify";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { customerId, name, phone, email, pickup, dropoff, stops, date, time, fare, distance, vehicle, paymentMethod, fareType, notes, eventPricingId, eventSurcharge, pickupDetails, dropoffDetails, buildingInfo, source, isPriority, priorityCharge } = body;
+    const { customerId, name, phone, email, pickup, dropoff, stops, date, time, fare, distance, vehicle, paymentMethod, fareType, notes, eventPricingId, eventSurcharge, pickupDetails, dropoffDetails, buildingInfo, source, isPriority, priorityCharge, isOpenBid } = body;
 
     if (!name || !phone || !pickup || !dropoff || fare == null) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -41,8 +43,34 @@ export async function POST(req: NextRequest) {
         eventSurcharge: eventSurcharge ? parseFloat(eventSurcharge) : null,
         isPriority: isPriority === true,
         priorityCharge: priorityCharge ? parseFloat(priorityCharge) : null,
+        ...(isOpenBid === true ? { isOpenBid: true, status: "open-bid" } : {}),
       },
     });
+
+    // Send FCM to ALL eligible drivers when open bid is created
+    if (isOpenBid === true) {
+      const drivers = await prisma.driver.findMany({
+        where: { status: "approved", isAvailable: true, isEnabled: true, pushToken: { not: null } },
+        select: { id: true, pushToken: true },
+      });
+      for (const d of drivers) {
+        if (d.pushToken) {
+          sendPushNotification(
+            d.pushToken,
+            "Open Bid Available",
+            `${booking.pickup} → ${booking.dropoff} | £${booking.fare.toFixed(2)}`,
+            { bookingId: booking.id, type: "open-bid" }
+          );
+        }
+        createDriverNotification(
+          d.id,
+          "Open Bid Available",
+          `${booking.pickup} → ${booking.dropoff} | £${booking.fare.toFixed(2)}`,
+          "open-bid",
+          JSON.stringify({ bookingId: booking.id })
+        );
+      }
+    }
 
     return NextResponse.json({ booking });
   } catch {
