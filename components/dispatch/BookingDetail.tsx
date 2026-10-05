@@ -23,7 +23,7 @@ interface Booking {
 
 interface Driver { id: string; name: string; isAvailable: boolean; hasActiveRide?: boolean; }
 
-const statuses = ["pending", "confirmed", "assigned", "accepted", "arrived", "in-progress", "completed", "cancelled"];
+const statuses = ["pending", "confirmed", "assigned", "accepted", "arrived", "in-progress", "completed", "cancelled", "open-bid"];
 
 function toISODate(d: string) { const p = d.split("/"); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : d; }
 function toDisplayDate(d: string) { const p = d.split("-"); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d; }
@@ -33,6 +33,8 @@ export default function BookingDetail({ booking, onClose }: { booking: Booking; 
   const [notes, setNotes] = useState(booking.notes?.startsWith("stripe:") ? "" : (booking.notes || ""));
   const [driverId, setDriverId] = useState(booking.driverId || "");
   const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [isOpenBid, setIsOpenBid] = useState(false);
+  const [bids, setBids] = useState<{ id: string; bidTime: string; isWinner: boolean; driver: { name: string } }[]>([]);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [calculating, setCalculating] = useState(false);
@@ -58,6 +60,8 @@ export default function BookingDetail({ booking, onClose }: { booking: Booking; 
       .then((d) => setMarchSurchargeOn(d.enabled !== false)).catch(() => {});
     fetch("/api/settings/area-surcharge").then((r) => r.json())
       .then((d) => setSurchargeConfig({ radiusMiles: d.radiusMiles ?? 3, perMile: d.perMile ?? 1 })).catch(() => {});
+    fetch(`/api/bookings/${booking.id}`).then((r) => r.json())
+      .then((d) => { if (d.booking?.bids) setBids(d.booking.bids); }).catch(() => {});
   }, []);
 
   const handlePlaceChange = (type: "pickup" | "dropoff", place: PlaceData) => {
@@ -81,7 +85,11 @@ export default function BookingDetail({ booking, onClose }: { booking: Booking; 
   const save = async () => {
     setSaving(true);
     const body: Record<string, unknown> = { status, notes };
-    if (driverId !== (booking.driverId || "")) body.driverId = driverId || null;
+    if (isOpenBid) {
+      body.isOpenBid = true;
+    } else if (driverId !== (booking.driverId || "")) {
+      body.driverId = driverId || null;
+    }
     if (editing) {
       body.pickup = edits.pickup; body.dropoff = edits.dropoff;
       body.stops = edits.stops.filter(Boolean).length ? JSON.stringify(edits.stops.filter(Boolean)) : null;
@@ -136,13 +144,40 @@ export default function BookingDetail({ booking, onClose }: { booking: Booking; 
             <label className="block text-navy/60 text-xs font-medium mb-1.5">
               <UserCheck className="w-3.5 h-3.5 inline mr-1" />Assign Driver
             </label>
-            <select value={driverId} onChange={(e) => setDriverId(e.target.value)} className={selectClass}>
-              <option value="">Unassigned</option>
-              {drivers.map((d) => (
-                <option key={d.id} value={d.id}>{d.name} {!d.isAvailable ? "(Offline)" : d.hasActiveRide ? "(Busy)" : "(Available)"}</option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select value={driverId} onChange={(e) => { setDriverId(e.target.value); setIsOpenBid(false); }} className={`${selectClass} flex-1`} disabled={isOpenBid}>
+                <option value="">Unassigned</option>
+                {drivers.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name} {!d.isAvailable ? "(Offline)" : d.hasActiveRide ? "(Busy)" : "(Available)"}</option>
+                ))}
+              </select>
+              <button type="button" onClick={() => { setIsOpenBid(!isOpenBid); if (!isOpenBid) setDriverId(""); }}
+                className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer transition-colors ${
+                  isOpenBid ? "bg-orange-500 text-white" : "bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100"
+                }`}>
+                ⚡ Open Bid
+              </button>
+            </div>
+            {isOpenBid && (
+              <p className="text-orange-500 text-xs mt-1.5">Job will be sent to all available drivers. First to bid wins.</p>
+            )}
           </div>
+
+          {bids.length > 0 && (
+            <div>
+              <label className="block text-navy/60 text-xs font-medium mb-1.5">Bid History</label>
+              <div className="bg-gray-50 rounded-xl border border-gray-200 divide-y divide-gray-100">
+                {bids.map((b) => (
+                  <div key={b.id} className="flex items-center justify-between px-3 py-2 text-xs">
+                    <span className={`font-medium ${b.isWinner ? "text-green-600" : "text-navy/60"}`}>
+                      {b.driver.name} {b.isWinner && "✓ Winner"}
+                    </span>
+                    <span className="text-navy/40">{new Date(b.bidTime).toLocaleString("en-GB")}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="block text-navy/60 text-xs font-medium mb-1.5">Update Status</label>

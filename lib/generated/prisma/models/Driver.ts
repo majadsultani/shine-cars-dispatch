@@ -342,6 +342,7 @@ export type DriverWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Driver"> | Date | string
   documents?: Prisma.DriverDocumentListRelationFilter
   bookings?: Prisma.BookingListRelationFilter
+  bids?: Prisma.BidListRelationFilter
   recurringBookings?: Prisma.RecurringBookingListRelationFilter
   notifications?: Prisma.DriverNotificationListRelationFilter
   chatMessages?: Prisma.ChatMessageListRelationFilter
@@ -370,6 +371,7 @@ export type DriverOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   documents?: Prisma.DriverDocumentOrderByRelationAggregateInput
   bookings?: Prisma.BookingOrderByRelationAggregateInput
+  bids?: Prisma.BidOrderByRelationAggregateInput
   recurringBookings?: Prisma.RecurringBookingOrderByRelationAggregateInput
   notifications?: Prisma.DriverNotificationOrderByRelationAggregateInput
   chatMessages?: Prisma.ChatMessageOrderByRelationAggregateInput
@@ -401,6 +403,7 @@ export type DriverWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Driver"> | Date | string
   documents?: Prisma.DriverDocumentListRelationFilter
   bookings?: Prisma.BookingListRelationFilter
+  bids?: Prisma.BidListRelationFilter
   recurringBookings?: Prisma.RecurringBookingListRelationFilter
   notifications?: Prisma.DriverNotificationListRelationFilter
   chatMessages?: Prisma.ChatMessageListRelationFilter
@@ -481,6 +484,7 @@ export type DriverCreateInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutDriverInput
@@ -509,6 +513,7 @@ export type DriverUncheckedCreateInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentUncheckedCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidUncheckedCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingUncheckedCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationUncheckedCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutDriverInput
@@ -537,6 +542,7 @@ export type DriverUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutDriverNestedInput
@@ -565,6 +571,7 @@ export type DriverUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUncheckedUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUncheckedUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUncheckedUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUncheckedUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutDriverNestedInput
@@ -815,6 +822,20 @@ export type DriverUpdateOneRequiredWithoutDocumentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DriverUpdateToOneWithWhereWithoutDocumentsInput, Prisma.DriverUpdateWithoutDocumentsInput>, Prisma.DriverUncheckedUpdateWithoutDocumentsInput>
 }
 
+export type DriverCreateNestedOneWithoutBidsInput = {
+  create?: Prisma.XOR<Prisma.DriverCreateWithoutBidsInput, Prisma.DriverUncheckedCreateWithoutBidsInput>
+  connectOrCreate?: Prisma.DriverCreateOrConnectWithoutBidsInput
+  connect?: Prisma.DriverWhereUniqueInput
+}
+
+export type DriverUpdateOneRequiredWithoutBidsNestedInput = {
+  create?: Prisma.XOR<Prisma.DriverCreateWithoutBidsInput, Prisma.DriverUncheckedCreateWithoutBidsInput>
+  connectOrCreate?: Prisma.DriverCreateOrConnectWithoutBidsInput
+  upsert?: Prisma.DriverUpsertWithoutBidsInput
+  connect?: Prisma.DriverWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DriverUpdateToOneWithWhereWithoutBidsInput, Prisma.DriverUpdateWithoutBidsInput>, Prisma.DriverUncheckedUpdateWithoutBidsInput>
+}
+
 export type DriverCreateWithoutBookingsInput = {
   id?: string
   name: string
@@ -836,6 +857,7 @@ export type DriverCreateWithoutBookingsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutDriverInput
@@ -863,6 +885,7 @@ export type DriverUncheckedCreateWithoutBookingsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentUncheckedCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidUncheckedCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingUncheckedCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationUncheckedCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutDriverInput
@@ -906,6 +929,7 @@ export type DriverUpdateWithoutBookingsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutDriverNestedInput
@@ -933,6 +957,7 @@ export type DriverUncheckedUpdateWithoutBookingsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUncheckedUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUncheckedUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUncheckedUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUncheckedUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutDriverNestedInput
@@ -961,6 +986,7 @@ export type DriverCreateWithoutRecurringBookingsInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutDriverInput
   driverInvoices?: Prisma.DriverInvoiceCreateNestedManyWithoutDriverInput
@@ -988,6 +1014,7 @@ export type DriverUncheckedCreateWithoutRecurringBookingsInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentUncheckedCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidUncheckedCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationUncheckedCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutDriverInput
   driverInvoices?: Prisma.DriverInvoiceUncheckedCreateNestedManyWithoutDriverInput
@@ -1031,6 +1058,7 @@ export type DriverUpdateWithoutRecurringBookingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutDriverNestedInput
   driverInvoices?: Prisma.DriverInvoiceUpdateManyWithoutDriverNestedInput
@@ -1058,6 +1086,7 @@ export type DriverUncheckedUpdateWithoutRecurringBookingsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUncheckedUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUncheckedUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUncheckedUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutDriverNestedInput
   driverInvoices?: Prisma.DriverInvoiceUncheckedUpdateManyWithoutDriverNestedInput
@@ -1085,6 +1114,7 @@ export type DriverCreateWithoutDriverInvoicesInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutDriverInput
@@ -1112,6 +1142,7 @@ export type DriverUncheckedCreateWithoutDriverInvoicesInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentUncheckedCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidUncheckedCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingUncheckedCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationUncheckedCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutDriverInput
@@ -1155,6 +1186,7 @@ export type DriverUpdateWithoutDriverInvoicesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutDriverNestedInput
@@ -1182,6 +1214,7 @@ export type DriverUncheckedUpdateWithoutDriverInvoicesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUncheckedUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUncheckedUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUncheckedUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUncheckedUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutDriverNestedInput
@@ -1209,6 +1242,7 @@ export type DriverCreateWithoutNotificationsInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutDriverInput
   driverInvoices?: Prisma.DriverInvoiceCreateNestedManyWithoutDriverInput
@@ -1236,6 +1270,7 @@ export type DriverUncheckedCreateWithoutNotificationsInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentUncheckedCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidUncheckedCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingUncheckedCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutDriverInput
   driverInvoices?: Prisma.DriverInvoiceUncheckedCreateNestedManyWithoutDriverInput
@@ -1279,6 +1314,7 @@ export type DriverUpdateWithoutNotificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutDriverNestedInput
   driverInvoices?: Prisma.DriverInvoiceUpdateManyWithoutDriverNestedInput
@@ -1306,6 +1342,7 @@ export type DriverUncheckedUpdateWithoutNotificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUncheckedUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUncheckedUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUncheckedUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutDriverNestedInput
   driverInvoices?: Prisma.DriverInvoiceUncheckedUpdateManyWithoutDriverNestedInput
@@ -1333,6 +1370,7 @@ export type DriverCreateWithoutChatMessagesInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationCreateNestedManyWithoutDriverInput
   driverInvoices?: Prisma.DriverInvoiceCreateNestedManyWithoutDriverInput
@@ -1360,6 +1398,7 @@ export type DriverUncheckedCreateWithoutChatMessagesInput = {
   updatedAt?: Date | string
   documents?: Prisma.DriverDocumentUncheckedCreateNestedManyWithoutDriverInput
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidUncheckedCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingUncheckedCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationUncheckedCreateNestedManyWithoutDriverInput
   driverInvoices?: Prisma.DriverInvoiceUncheckedCreateNestedManyWithoutDriverInput
@@ -1403,6 +1442,7 @@ export type DriverUpdateWithoutChatMessagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUpdateManyWithoutDriverNestedInput
   driverInvoices?: Prisma.DriverInvoiceUpdateManyWithoutDriverNestedInput
@@ -1430,6 +1470,7 @@ export type DriverUncheckedUpdateWithoutChatMessagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DriverDocumentUncheckedUpdateManyWithoutDriverNestedInput
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUncheckedUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUncheckedUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUncheckedUpdateManyWithoutDriverNestedInput
   driverInvoices?: Prisma.DriverInvoiceUncheckedUpdateManyWithoutDriverNestedInput
@@ -1456,6 +1497,7 @@ export type DriverCreateWithoutDocumentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutDriverInput
@@ -1483,6 +1525,7 @@ export type DriverUncheckedCreateWithoutDocumentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutDriverInput
+  bids?: Prisma.BidUncheckedCreateNestedManyWithoutDriverInput
   recurringBookings?: Prisma.RecurringBookingUncheckedCreateNestedManyWithoutDriverInput
   notifications?: Prisma.DriverNotificationUncheckedCreateNestedManyWithoutDriverInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutDriverInput
@@ -1526,6 +1569,7 @@ export type DriverUpdateWithoutDocumentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutDriverNestedInput
@@ -1553,6 +1597,135 @@ export type DriverUncheckedUpdateWithoutDocumentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookings?: Prisma.BookingUncheckedUpdateManyWithoutDriverNestedInput
+  bids?: Prisma.BidUncheckedUpdateManyWithoutDriverNestedInput
+  recurringBookings?: Prisma.RecurringBookingUncheckedUpdateManyWithoutDriverNestedInput
+  notifications?: Prisma.DriverNotificationUncheckedUpdateManyWithoutDriverNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutDriverNestedInput
+  driverInvoices?: Prisma.DriverInvoiceUncheckedUpdateManyWithoutDriverNestedInput
+}
+
+export type DriverCreateWithoutBidsInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  password: string
+  status?: string
+  isAvailable?: boolean
+  isEnabled?: boolean
+  latitude?: number | null
+  longitude?: number | null
+  locationUpdatedAt?: Date | string | null
+  vehicleMake?: string | null
+  vehicleColor?: string | null
+  vehicleReg?: string | null
+  passengerLicense?: number | null
+  commissionRate?: number
+  pushToken?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DriverDocumentCreateNestedManyWithoutDriverInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutDriverInput
+  recurringBookings?: Prisma.RecurringBookingCreateNestedManyWithoutDriverInput
+  notifications?: Prisma.DriverNotificationCreateNestedManyWithoutDriverInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutDriverInput
+  driverInvoices?: Prisma.DriverInvoiceCreateNestedManyWithoutDriverInput
+}
+
+export type DriverUncheckedCreateWithoutBidsInput = {
+  id?: string
+  name: string
+  email: string
+  phone: string
+  password: string
+  status?: string
+  isAvailable?: boolean
+  isEnabled?: boolean
+  latitude?: number | null
+  longitude?: number | null
+  locationUpdatedAt?: Date | string | null
+  vehicleMake?: string | null
+  vehicleColor?: string | null
+  vehicleReg?: string | null
+  passengerLicense?: number | null
+  commissionRate?: number
+  pushToken?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DriverDocumentUncheckedCreateNestedManyWithoutDriverInput
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutDriverInput
+  recurringBookings?: Prisma.RecurringBookingUncheckedCreateNestedManyWithoutDriverInput
+  notifications?: Prisma.DriverNotificationUncheckedCreateNestedManyWithoutDriverInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutDriverInput
+  driverInvoices?: Prisma.DriverInvoiceUncheckedCreateNestedManyWithoutDriverInput
+}
+
+export type DriverCreateOrConnectWithoutBidsInput = {
+  where: Prisma.DriverWhereUniqueInput
+  create: Prisma.XOR<Prisma.DriverCreateWithoutBidsInput, Prisma.DriverUncheckedCreateWithoutBidsInput>
+}
+
+export type DriverUpsertWithoutBidsInput = {
+  update: Prisma.XOR<Prisma.DriverUpdateWithoutBidsInput, Prisma.DriverUncheckedUpdateWithoutBidsInput>
+  create: Prisma.XOR<Prisma.DriverCreateWithoutBidsInput, Prisma.DriverUncheckedCreateWithoutBidsInput>
+  where?: Prisma.DriverWhereInput
+}
+
+export type DriverUpdateToOneWithWhereWithoutBidsInput = {
+  where?: Prisma.DriverWhereInput
+  data: Prisma.XOR<Prisma.DriverUpdateWithoutBidsInput, Prisma.DriverUncheckedUpdateWithoutBidsInput>
+}
+
+export type DriverUpdateWithoutBidsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  locationUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vehicleMake?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicleColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicleReg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passengerLicense?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  commissionRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DriverDocumentUpdateManyWithoutDriverNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutDriverNestedInput
+  recurringBookings?: Prisma.RecurringBookingUpdateManyWithoutDriverNestedInput
+  notifications?: Prisma.DriverNotificationUpdateManyWithoutDriverNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutDriverNestedInput
+  driverInvoices?: Prisma.DriverInvoiceUpdateManyWithoutDriverNestedInput
+}
+
+export type DriverUncheckedUpdateWithoutBidsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  latitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  longitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  locationUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vehicleMake?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicleColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicleReg?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passengerLicense?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  commissionRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  pushToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DriverDocumentUncheckedUpdateManyWithoutDriverNestedInput
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutDriverNestedInput
   recurringBookings?: Prisma.RecurringBookingUncheckedUpdateManyWithoutDriverNestedInput
   notifications?: Prisma.DriverNotificationUncheckedUpdateManyWithoutDriverNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutDriverNestedInput
@@ -1567,6 +1740,7 @@ export type DriverUncheckedUpdateWithoutDocumentsInput = {
 export type DriverCountOutputType = {
   documents: number
   bookings: number
+  bids: number
   recurringBookings: number
   notifications: number
   chatMessages: number
@@ -1576,6 +1750,7 @@ export type DriverCountOutputType = {
 export type DriverCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   documents?: boolean | DriverCountOutputTypeCountDocumentsArgs
   bookings?: boolean | DriverCountOutputTypeCountBookingsArgs
+  bids?: boolean | DriverCountOutputTypeCountBidsArgs
   recurringBookings?: boolean | DriverCountOutputTypeCountRecurringBookingsArgs
   notifications?: boolean | DriverCountOutputTypeCountNotificationsArgs
   chatMessages?: boolean | DriverCountOutputTypeCountChatMessagesArgs
@@ -1604,6 +1779,13 @@ export type DriverCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Type
  */
 export type DriverCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BookingWhereInput
+}
+
+/**
+ * DriverCountOutputType without action
+ */
+export type DriverCountOutputTypeCountBidsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BidWhereInput
 }
 
 /**
@@ -1657,6 +1839,7 @@ export type DriverSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   updatedAt?: boolean
   documents?: boolean | Prisma.Driver$documentsArgs<ExtArgs>
   bookings?: boolean | Prisma.Driver$bookingsArgs<ExtArgs>
+  bids?: boolean | Prisma.Driver$bidsArgs<ExtArgs>
   recurringBookings?: boolean | Prisma.Driver$recurringBookingsArgs<ExtArgs>
   notifications?: boolean | Prisma.Driver$notificationsArgs<ExtArgs>
   chatMessages?: boolean | Prisma.Driver$chatMessagesArgs<ExtArgs>
@@ -1734,6 +1917,7 @@ export type DriverOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type DriverInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   documents?: boolean | Prisma.Driver$documentsArgs<ExtArgs>
   bookings?: boolean | Prisma.Driver$bookingsArgs<ExtArgs>
+  bids?: boolean | Prisma.Driver$bidsArgs<ExtArgs>
   recurringBookings?: boolean | Prisma.Driver$recurringBookingsArgs<ExtArgs>
   notifications?: boolean | Prisma.Driver$notificationsArgs<ExtArgs>
   chatMessages?: boolean | Prisma.Driver$chatMessagesArgs<ExtArgs>
@@ -1748,6 +1932,7 @@ export type $DriverPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     documents: Prisma.$DriverDocumentPayload<ExtArgs>[]
     bookings: Prisma.$BookingPayload<ExtArgs>[]
+    bids: Prisma.$BidPayload<ExtArgs>[]
     recurringBookings: Prisma.$RecurringBookingPayload<ExtArgs>[]
     notifications: Prisma.$DriverNotificationPayload<ExtArgs>[]
     chatMessages: Prisma.$ChatMessagePayload<ExtArgs>[]
@@ -2169,6 +2354,7 @@ export interface Prisma__DriverClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   documents<T extends Prisma.Driver$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Driver$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DriverDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bookings<T extends Prisma.Driver$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Driver$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bids<T extends Prisma.Driver$bidsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Driver$bidsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BidPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recurringBookings<T extends Prisma.Driver$recurringBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Driver$recurringBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.Driver$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Driver$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DriverNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chatMessages<T extends Prisma.Driver$chatMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Driver$chatMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2659,6 +2845,30 @@ export type Driver$bookingsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * Driver.bids
+ */
+export type Driver$bidsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Bid
+   */
+  select?: Prisma.BidSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Bid
+   */
+  omit?: Prisma.BidOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BidInclude<ExtArgs> | null
+  where?: Prisma.BidWhereInput
+  orderBy?: Prisma.BidOrderByWithRelationInput | Prisma.BidOrderByWithRelationInput[]
+  cursor?: Prisma.BidWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BidScalarFieldEnum | Prisma.BidScalarFieldEnum[]
 }
 
 /**

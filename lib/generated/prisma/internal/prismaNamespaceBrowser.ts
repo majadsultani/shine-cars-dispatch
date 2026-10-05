@@ -64,7 +64,8 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   DriverDocument: 'DriverDocument',
   SiteSetting: 'SiteSetting',
-  EventPricing: 'EventPricing'
+  EventPricing: 'EventPricing',
+  Bid: 'Bid'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -119,6 +120,7 @@ export const BookingScalarFieldEnum = {
   priorityCharge: 'priorityCharge',
   isRecurring: 'isRecurring',
   recurringId: 'recurringId',
+  isOpenBid: 'isOpenBid',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -331,6 +333,17 @@ export const EventPricingScalarFieldEnum = {
 } as const
 
 export type EventPricingScalarFieldEnum = (typeof EventPricingScalarFieldEnum)[keyof typeof EventPricingScalarFieldEnum]
+
+
+export const BidScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  driverId: 'driverId',
+  bidTime: 'bidTime',
+  isWinner: 'isWinner'
+} as const
+
+export type BidScalarFieldEnum = (typeof BidScalarFieldEnum)[keyof typeof BidScalarFieldEnum]
 
 
 export const SortOrder = {
