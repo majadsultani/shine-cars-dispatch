@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     params.append("line_items[0][price_data][product_data][description]", `${routeDesc} on ${date} at ${time}`);
     params.append("line_items[0][price_data][unit_amount]", String(Math.round(parseFloat(fare) * 100)));
     params.append("line_items[0][quantity]", "1");
-    params.append("success_url", "https://shine-cars-dispatch.vercel.app/api/customer-stripe/success?session_id={CHECKOUT_SESSION_ID}");
+    params.append("success_url", "https://dispatch.shinecars.co.uk/api/customer-stripe/success?session_id={CHECKOUT_SESSION_ID}");
     params.append("cancel_url", "https://shinecars.co.uk");
     params.append("metadata[name]", name);
     params.append("metadata[phone]", phone);
