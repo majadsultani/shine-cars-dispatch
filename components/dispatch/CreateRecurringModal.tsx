@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { X, MapPin, Navigation, Loader2 } from "lucide-react";
+import { X, MapPin, Navigation, Loader2, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import DispatchAddressInput, { type PlaceData } from "@/components/dispatch/DispatchAddressInput";
+import AddCompanyModal from "@/components/dispatch/AddCompanyModal";
 import { calculateFare, isInMarchArea, isSundayOrHoliday, metersToMiles, DEFAULT_SURCHARGE, type VehicleType, type SurchargeConfig } from "@/lib/fare";
 
 interface Company { id: string; name: string; companyName: string | null; phone: string }
@@ -12,12 +13,14 @@ const ALL_DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "satur
 export default function CreateRecurringModal({ onClose }: { onClose: () => void }) {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [customerId, setCustomerId] = useState("");
+  const [showAddCompany, setShowAddCompany] = useState(false);
   const [name, setName] = useState(""); const [phone, setPhone] = useState("");
   const [pickup, setPickup] = useState<PlaceData | null>(null);
   const [dropoff, setDropoff] = useState<PlaceData | null>(null);
   const [pickupText, setPickupText] = useState(""); const [dropoffText, setDropoffText] = useState("");
   const [time, setTime] = useState(""); const [vehicle, setVehicle] = useState<VehicleType>("car");
   const [fare, setFare] = useState(0); const [distance, setDistance] = useState(0);
+  const [fareManual, setFareManual] = useState(false);
   const [days, setDays] = useState<string[]>([]);
   const [frequency, setFrequency] = useState("weekly");
   const [startDate, setStartDate] = useState(""); const [endDate, setEndDate] = useState("");
@@ -47,7 +50,7 @@ export default function CreateRecurringModal({ onClose }: { onClose: () => void 
         const miles = metersToMiles(res.rows[0].elements[0].distance.value);
         setDistance(miles);
         const skipSurcharge = !marchSurchargeOn && isInMarchArea(pickup.lat, pickup.lng);
-        setFare(calculateFare(miles, pickup.lat, pickup.lng, vehicle, false, skipSurcharge, surchargeConfig));
+        if (!fareManual) setFare(calculateFare(miles, pickup.lat, pickup.lng, vehicle, false, skipSurcharge, surchargeConfig));
       }
     );
   }, [pickup, dropoff, vehicle, marchSurchargeOn, surchargeConfig]);
@@ -86,14 +89,20 @@ export default function CreateRecurringModal({ onClose }: { onClose: () => void 
         <div className="p-5 space-y-3">
           <div>
             <label className="text-xs text-navy/60 font-medium">Company</label>
-            <select value={customerId} onChange={(e) => {
-              setCustomerId(e.target.value);
-              const c = companies.find((x) => x.id === e.target.value);
-              if (c) { setName(c.companyName || c.name); setPhone(c.phone); }
-            }} className={fieldCls}>
-              <option value="">Select company...</option>
-              {companies.map((c) => <option key={c.id} value={c.id}>{c.companyName || c.name}</option>)}
-            </select>
+            <div className="flex gap-2">
+              <select value={customerId} onChange={(e) => {
+                setCustomerId(e.target.value);
+                const c = companies.find((x) => x.id === e.target.value);
+                if (c) { setName(c.companyName || c.name); setPhone(c.phone); }
+              }} className={`${fieldCls} flex-1`}>
+                <option value="">Select company...</option>
+                {companies.map((c) => <option key={c.id} value={c.id}>{c.companyName || c.name}</option>)}
+              </select>
+              <button type="button" onClick={() => setShowAddCompany(true)}
+                className="px-3 py-2.5 rounded-xl bg-crimson/10 text-crimson text-xs font-bold hover:bg-crimson/20 transition-colors cursor-pointer shrink-0 flex items-center gap-1">
+                <Plus className="w-3.5 h-3.5" /> New
+              </button>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div><label className="text-xs text-navy/60 font-medium">Passenger Name</label>
@@ -114,13 +123,15 @@ export default function CreateRecurringModal({ onClose }: { onClose: () => void 
           <div className="rounded-xl bg-gray-50 border border-gray-200 p-3">
             {calculating ? (
               <div className="flex items-center gap-2 text-navy/40 text-xs"><Loader2 className="w-3.5 h-3.5 animate-spin" /> Calculating fare...</div>
-            ) : fare > 0 ? (
-              <div className="flex items-center justify-between">
-                <div><p className="text-navy/40 text-[10px]">Distance</p><p className="text-navy font-bold text-sm">{distance.toFixed(1)} mi</p></div>
-                <div className="text-right"><p className="text-navy/40 text-[10px]">Fixed Fare</p><p className="text-crimson font-bold text-lg">&pound;{fare.toFixed(2)}</p></div>
-              </div>
             ) : (
-              <p className="text-navy/30 text-xs text-center">Select pickup & drop-off to calculate fare</p>
+              <div className="flex items-center justify-between gap-3">
+                <div><p className="text-navy/40 text-[10px]">Distance</p><p className="text-navy font-bold text-sm">{distance > 0 ? `${distance.toFixed(1)} mi` : "—"}</p></div>
+                <div className="text-right">
+                  <p className="text-navy/40 text-[10px]">Fare (£) {fareManual && <span className="text-amber-500">Manual</span>}</p>
+                  <input type="number" step="0.01" min="0" value={fare || ""} onChange={(e) => { setFare(parseFloat(e.target.value) || 0); setFareManual(true); }}
+                    className="w-24 text-right text-crimson font-bold text-lg bg-white border border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-crimson/50" placeholder="0.00" />
+                </div>
+              </div>
             )}
           </div>
 
@@ -166,6 +177,16 @@ export default function CreateRecurringModal({ onClose }: { onClose: () => void 
           </button>
         </div>
       </motion.div>
+
+      {showAddCompany && (
+        <AddCompanyModal onClose={() => setShowAddCompany(false)} onCreated={(c) => {
+          setCompanies((prev) => [c, ...prev]);
+          setCustomerId(c.id);
+          setName(c.companyName || c.name);
+          setPhone(c.phone);
+          setShowAddCompany(false);
+        }} />
+      )}
     </motion.div>
   );
 }
