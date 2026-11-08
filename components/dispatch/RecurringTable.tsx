@@ -50,7 +50,7 @@ export default function RecurringTable({ filter, search }: { filter: string; sea
     load();
   };
 
-  const parseDays = (d: string) => { try { return (JSON.parse(d) as string[]).map((s) => s.slice(0, 3).toUpperCase()).join(", "); } catch { return d; } };
+  const parseDays = (d: string) => { try { let p = JSON.parse(d); if (typeof p === "string") p = JSON.parse(p); return Array.isArray(p) ? p.map((s: string) => s.slice(0, 3).toUpperCase()).join(", ") : d; } catch { return d; } };
   const statusStyle: Record<string, string> = {
     pending: "bg-yellow-50 text-yellow-600", confirmed: "bg-blue-50 text-blue-600", assigned: "bg-purple-50 text-purple-600",
     accepted: "bg-indigo-50 text-indigo-600", arrived: "bg-cyan-50 text-cyan-600", "in-progress": "bg-orange-50 text-orange-600",
